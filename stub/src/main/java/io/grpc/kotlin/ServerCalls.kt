@@ -182,11 +182,12 @@ object ServerCalls {
   private fun <RequestT, ResponseT> serverCallHandler(
     context: CoroutineContext,
     implementation: (Flow<RequestT>) -> Flow<ResponseT>
-  ): ServerCallHandler<RequestT, ResponseT> = ServerCallHandler { call, _ ->
+  ): ServerCallHandler<RequestT, ResponseT> = ServerCallHandler { call, headers ->
     serverCallListener(
       context +
         CoroutineContextServerInterceptor.COROUTINE_CONTEXT_KEY.get() +
-        GrpcContextElement.current(),
+        GrpcContextElement.current() +
+        MetadataElement(headers),
       call,
       implementation
     )
